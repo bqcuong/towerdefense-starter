@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TowerDefense2 extends Application {
+public class TowerDefense extends Application {
 
     GraphicsContext gc;
     List<GameObject> gameObjects = new ArrayList<>();
