@@ -47,6 +47,7 @@ public class TowerDefense extends Application {
         timer.start();
 
         gameObjects.add(createTank());
+        gameObjects.add(createTower());
     }
 
     // TODO: Factory Method
@@ -61,6 +62,15 @@ public class TowerDefense extends Application {
         tank.img = new Image("file:src/main/resources/AssetsKit_2/PNG/Retina/towerDefense_tile268.png");
         tank.gunImg = new Image("file:src/main/resources/AssetsKit_2/PNG/Retina/towerDefense_tile291.png");
         return tank;
+    }
+
+    public Tower createTower() {
+        Tower tower = new Tower();
+        tower.x = 4 * 128;
+        tower.y = 2 * 128;
+        tower.img = new Image("file:src/main/resources/AssetsKit_2/PNG/Retina/towerDefense_tile181.png");
+        tower.gunImg = new Image("file:src/main/resources/AssetsKit_2/PNG/Retina/towerDefense_tile249.png");
+        return tower;
     }
 
     public static final String[][] MAP_SPRITES = new String[][] {
@@ -144,6 +154,21 @@ abstract class AttackableObject extends VulnerableObject {
     double damage;
     double fireRate;
     double fireRange;
+}
+
+class Tower extends AttackableObject {
+    Image gunImg;
+
+    @Override
+    void render(GraphicsContext gc) {
+        gc.drawImage(img, x, y);
+        gc.drawImage(gunImg, x, y);
+    }
+
+    @Override
+    void update() {
+
+    }
 }
 
 class Tank extends AttackableObject {
