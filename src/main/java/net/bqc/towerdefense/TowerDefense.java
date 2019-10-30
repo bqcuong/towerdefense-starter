@@ -49,7 +49,7 @@ public class TowerDefense extends Application {
         gameObjects.add(createTank());
     }
 
-    // Factory Method
+    // TODO: Factory Method
     public Tank createTank() {
         Tank tank = new Tank();
         tank.i = 0;
@@ -73,6 +73,16 @@ public class TowerDefense extends Application {
             { "025", "023", "024", "024", "024", "024", "024", "024", "024", "024" },
     };
 
+    public static final Point[] wayPoints = new Point[] {
+            new Point(0 * 128 + 64, 6 * 128 + 00),
+            new Point(0 * 128 + 64, 3 * 128 + 64),
+            new Point(2 * 128 + 64, 3 * 128 + 64),
+            new Point(2 * 128 + 64, 0 * 128 + 64),
+            new Point(5 * 128 + 64, 0 * 128 + 64),
+            new Point(5 * 128 + 64, 5 * 128 - 64),
+            new Point(9 * 128 + 64, 5 * 128 - 64),
+    };
+
     private void drawMap(GraphicsContext gc) {
         for (int i = 0; i < MAP_SPRITES.length; i++) {
             for (int j = 0; j < MAP_SPRITES[i].length; j++) {
@@ -88,6 +98,10 @@ public class TowerDefense extends Application {
     public void render() {
         drawMap(gc);
         gameObjects.forEach(g -> g.render(gc));
+    }
+
+    public static double distance(int x1, int y1, int x2, int y2) {
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 }
 
@@ -136,6 +150,13 @@ class Tank extends AttackableObject {
     Image gunImg;
     int gunRotation;
 
+    int wayPointIndex = 0;
+    public Point getNextWayPoint() {
+        if (wayPointIndex < TowerDefense.wayPoints.length - 1)
+            return TowerDefense.wayPoints[++wayPointIndex];
+        return null;
+    }
+
     @Override
     void render(GraphicsContext gc) {
         SnapshotParameters params = new SnapshotParameters();
@@ -151,6 +172,34 @@ class Tank extends AttackableObject {
 
         gc.drawImage(base, x, y);
         gc.drawImage(gun, x, y);
+
+        gc.setFill(Color.RED);
+        gc.fillOval(TowerDefense.wayPoints[wayPointIndex].x,TowerDefense.wayPoints[wayPointIndex].y,10, 10);
+
+        gc.setFill(Color.BLUE);
+        gc.fillOval(x, y,10, 10);
+    }
+
+    void calculateDirection() {
+        // Tinh huong di tiep theo cho Object
+        if (wayPointIndex >= TowerDefense.wayPoints.length) {
+            // Enemy den way point cuoi
+            return;
+        }
+
+        Point currentWP = TowerDefense.wayPoints[wayPointIndex];
+        if (TowerDefense.distance(x, y, currentWP.x, currentWP.y) <= speed) {
+            x = currentWP.x;
+            y = currentWP.y;
+            Point nextWayPoint = getNextWayPoint();
+            if (nextWayPoint == null) return;
+            double deltaX = nextWayPoint.x - x;
+            double deltaY = nextWayPoint.y - y;
+            if (deltaX > speed) direction = Direction.RIGHT;
+            else if (deltaX < -speed) direction = Direction.LEFT;
+            else if (deltaY > speed) direction = Direction.DOWN;
+            else if (deltaY <= -speed) direction = Direction.UP;
+        }
     }
 
     @Override
@@ -173,8 +222,22 @@ class Tank extends AttackableObject {
                 break;
         }
     }
+}
 
-    void calculateDirection() {
-        // Tinh huong di tiep theo cho Object
+class Point {
+    int x;
+    int y;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return "Point{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 }
